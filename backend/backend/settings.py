@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'user1'
+    'user1',
+    'patient',
 ]
 auth_user_model='user1.User'
 MIDDLEWARE = [
