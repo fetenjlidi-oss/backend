@@ -2,8 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser,AbstractBaseUser
 class User(AbstractUser):
     role=models.CharField(max_length=30,default='user',null=True)
-    email=models.EmailField(unique=True)
-    is_verified=models.BooleanField(default=False)
+    email=models.EmailField(unique=True,null=True)
+    is_verified=models.BooleanField(default=False,null=True)
     groups = models.ManyToManyField(
         'auth.Group',
         related_name='user1_users',
