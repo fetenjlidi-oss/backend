@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'user1'
+
+    'user1',
+    'patient',
 ]
 AUTH_USER_MODEL = 'user1.User'
 MIDDLEWARE = [
