@@ -11,6 +11,15 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv 
+import os
+load_dotenv( ".env" ) 
+
+
+# Google OAuth
+ GOOGLE_OAUTH_CLIENT_ID = os.getenv( "GOOGLE_OAUTH_CLIENT_ID" ) 
+GOOGLE_OAUTH_CLIENT_SECRET = os.getenv( "GOOGLE_OAUTH_CLIENT_SECRET" ) 
+GOOGLE_OAUTH_CALLBACK_URL = os.getenv( "GOOGLE_OAUTH_CALLBACK_URL" )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,10 +47,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-
+    'rest_framework_simplejwt',
+       'allauth' , 
+    'allauth.account' , 
+    'allauth.socialaccount' , 
+    'dj_rest_auth.registration',
+    'corsheaders',
     'user1',
     'patient',
+    'allauth.socialaccount.providers.google',
 ]
+SITE_ID = 1
+
 AUTH_USER_MODEL = 'user1.User'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -51,6 +68,23 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+     "allauth.account.middleware.AccountMiddleware" ,
+      'corsheaders.middleware.CorsMiddleware',
+]
+ACCOUNT_AUTHENTICATION_METHOD = "email"  
+ACCOUNT_USERNAME_REQUIRED = False 
+ACCOUNT_EMAIL_REQUIRED = True 
+ACCOUNT_EMAIL_VERIFICATION = "none"
+REST_FRAMEWORK = {
+    
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+    
+}
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:4200',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -123,3 +157,21 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+ SOCIALACCOUNT_EMAIL_AUTHENTICATION = True 
+# Connexion du compte local et du compte social si un compte local avec cette adresse e-mail existe déjà
+ SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True 
+SOCIALACCOUNT_PROVIDERS = { 
+    " google" : { 
+        "APPS" : [ 
+            { 
+                "client_id" : GOOGLE_OAUTH_CLIENT_ID, 
+                "secret" : GOOGLE_OAUTH_CLIENT_SECRET, 
+                "key" : "" , 
+            }, 
+        ], 
+        "SCOPE" : [ "profile" , "email" ], 
+        "AUTH_PARAMS" : { 
+            "access_type" : "online" , 
+        }, 
+    } 
+}
