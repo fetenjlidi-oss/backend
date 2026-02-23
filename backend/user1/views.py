@@ -4,8 +4,9 @@ from rest_framework import generics, status, viewsets
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import UserSerializer, RegisterSerializer
+from .serializers import LoginSerializer, RegisterSerializer, UserSerializer
 
 User = get_user_model()
 
@@ -13,17 +14,19 @@ User = get_user_model()
 
 
 class UserCreateView(APIView):
-    permission_classes = [IsAdminUser]
+
 
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
+        print(request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+        
         return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
 
 
 class UserListView(APIView):
-    permission_classes = [IsAdminUser]
+    # permission_classes = [IsAdminUser]
 
     def get(self, request):
         users = User.objects.all().order_by("-id")
@@ -31,7 +34,6 @@ class UserListView(APIView):
 
 
 class UserDetailView(APIView):
-    permission_classes = [IsAdminUser]
 
     def get(self, request, pk: int):
         user = get_object_or_404(User, pk=pk)
@@ -39,7 +41,6 @@ class UserDetailView(APIView):
 
 
 class UserUpdateView(APIView):
-    permission_classes = [IsAdminUser]
 
     def put(self, request, pk: int):
         user = get_object_or_404(User, pk=pk)
@@ -57,9 +58,29 @@ class UserUpdateView(APIView):
 
 
 class UserDeleteView(APIView):
-    permission_classes = [IsAdminUser]
+    #permission_classes = [IsAdminUser]
 
     def delete(self, request, pk: int):
         user = get_object_or_404(User, pk=pk)
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UserLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.validated_data["user"]
+        refresh = RefreshToken.for_user(user)
+
+        return Response(
+            {
+                "user": UserSerializer(user).data,
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            },
+            status=status.HTTP_200_OK,
+        )
