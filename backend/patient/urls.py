@@ -7,4 +7,5 @@ urlpatterns = [
     path('detail/<int:id>/',views.PatientDetailView.as_view(),name='patient-detail') ,
     path('update/<int:id>/',views.PatientUpdateView.as_view(),name='patient-update') ,
     path('delete/<int:id>/',views.PatientDeleteView.as_view(),name='patient-delete') ,
+    path("patients/login/", views.PatientLoginView.as_view(), name="patient-login"),
 ]

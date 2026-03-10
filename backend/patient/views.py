@@ -7,19 +7,24 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+
 from .models import Patient
-from .serializers import PatientSerializer
+from .serializers import PatientSerializer ,RegisterSerializer
+
+from rest_framework import serializers
+from django.contrib.auth import authenticate
 
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter 
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client 
-from dj_rest_auth.registration.views import SocialLoginView 
+from dj_rest_auth.registration.views import AllowAny, SocialLoginView 
 from django.conf import settings 
 class PatientCreateView(APIView):
     def post(self, request):
-        serializer = PatientSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        patient = serializer.save()
-        return Response(PatientSerializer(patient).data, status=status.HTTP_201_CREATED)
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            patient = serializer.save()
+            return Response(PatientSerializer(patient).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PatientListView(APIView):
@@ -59,26 +64,23 @@ class PatientDeleteView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+    
+class PatientLoginView(APIView):
+    permission_classes = [AllowAny]
 
-class  GoogleLogin ( SocialLoginView ): 
-    adapter_class = GoogleOAuth2Adapter 
-    callback_url = settings.GOOGLE_OAUTH_CALLBACK_URL 
-    client_class = OAuth2Client
-class  GoogleLoginCallback ( APIView ): 
-    def  get ( self, request, *args, **kwargs ): 
-        """ 
-        Si vous développez une application fullstack (par exemple, une application React en plus de Django), 
-        vous pouvez placer ce point de terminaison dans votre application frontend pour 
-        y recevoir les jetons JWT et les stocker dans l'état. 
-        """
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
 
-        code = request.GET.get( "code" ) 
+        patient = serializer.validated_data["patient"]
 
-        if code is  None : 
-            return Response(status=status.HTTP_400_BAD_REQUEST) 
-        
-        # N'oubliez pas de remplacer localhost:8000 par le nom de domaine réel avant le déploiement
-        token_endpoint_url = urljoin( "http://localhost:8000" , reverse( "google_login" )) 
-        response = requests.post(url=token_endpoint_url, data={ "code" : code}) 
+        refresh = RefreshToken.for_user(patient)  # type: ignore
 
-        return Response(response.json(), status=status.HTTP_200_OK)
+        return Response(
+            {
+                "patient": PatientSerializer(patient).data,
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            },
+            status=status.HTTP_200_OK,
+        )
