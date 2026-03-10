@@ -17,7 +17,7 @@ load_dotenv( ".env" )
 
 
 # Google OAuth
- GOOGLE_OAUTH_CLIENT_ID = os.getenv( "GOOGLE_OAUTH_CLIENT_ID" ) 
+GOOGLE_OAUTH_CLIENT_ID = os.getenv( "GOOGLE_OAUTH_CLIENT_ID" ) 
 GOOGLE_OAUTH_CLIENT_SECRET = os.getenv( "GOOGLE_OAUTH_CLIENT_SECRET" ) 
 GOOGLE_OAUTH_CALLBACK_URL = os.getenv( "GOOGLE_OAUTH_CALLBACK_URL" )
 
@@ -55,7 +55,10 @@ INSTALLED_APPS = [
     'corsheaders',
     'user1',
     'patient',
+    'medicament',
+    'traitement',
     'allauth.socialaccount.providers.google',
+    'rest_framework.authtoken',
 ]
 SITE_ID = 1
 
@@ -157,21 +160,21 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
- SOCIALACCOUNT_EMAIL_AUTHENTICATION = True 
-# Connexion du compte local et du compte social si un compte local avec cette adresse e-mail existe déjà
- SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True 
-SOCIALACCOUNT_PROVIDERS = { 
-    " google" : { 
-        "APPS" : [ 
-            { 
-                "client_id" : GOOGLE_OAUTH_CLIENT_ID, 
-                "secret" : GOOGLE_OAUTH_CLIENT_SECRET, 
-                "key" : "" , 
-            }, 
-        ], 
-        "SCOPE" : [ "profile" , "email" ], 
-        "AUTH_PARAMS" : { 
-            "access_type" : "online" , 
-        }, 
-    } 
-}
+#  SOCIALACCOUNT_EMAIL_AUTHENTICATION = True 
+# # Connexion du compte local et du compte social si un compte local avec cette adresse e-mail existe déjà
+#  SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True 
+# SOCIALACCOUNT_PROVIDERS = { 
+#     " google" : { 
+#         "APPS" : [ 
+#             { 
+#                 "client_id" : GOOGLE_OAUTH_CLIENT_ID, 
+#                 "secret" : GOOGLE_OAUTH_CLIENT_SECRET, 
+#                 "key" : "" , 
+#             }, 
+#         ], 
+#         "SCOPE" : [ "profile" , "email" ], 
+#         "AUTH_PARAMS" : { 
+#             "access_type" : "online" , 
+#         }, 
+#     } 
+# }

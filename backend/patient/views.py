@@ -1,4 +1,8 @@
+from urllib.parse import urljoin
+
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
+import requests
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -68,13 +72,13 @@ class  GoogleLoginCallback ( APIView ):
         y recevoir les jetons JWT et les stocker dans l'état. 
         """
 
-         code = request.GET.get( "code" ) 
+        code = request.GET.get( "code" ) 
 
         if code is  None : 
             return Response(status=status.HTTP_400_BAD_REQUEST) 
         
         # N'oubliez pas de remplacer localhost:8000 par le nom de domaine réel avant le déploiement
-         token_endpoint_url = urljoin( "http://localhost:8000" , reverse( "google_login" )) 
+        token_endpoint_url = urljoin( "http://localhost:8000" , reverse( "google_login" )) 
         response = requests.post(url=token_endpoint_url, data={ "code" : code}) 
 
         return Response(response.json(), status=status.HTTP_200_OK)
