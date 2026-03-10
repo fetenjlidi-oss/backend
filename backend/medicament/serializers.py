@@ -11,5 +11,13 @@ class MedicamentSerializer(serializers.ModelSerializer):
             "name",
             "dosage_ref",
             "description",
+            "unity",
+            "time",
+            "time_takes",
+            "quantity_total",
+            "quantity_limit",
+            "date_start",
+            "date_end",
+            "image",
         )
         read_only_fields = ("id",)
