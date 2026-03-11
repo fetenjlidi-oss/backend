@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'traitement',
     'allauth.socialaccount.providers.google',
     'rest_framework.authtoken',
+    'rappel',
 ]
 SITE_ID = 1
 
